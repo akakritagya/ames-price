@@ -1,0 +1,140 @@
+[project]
+name = "ames-price"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "akakritagya", email = "neupaneramesh555@gmail.com" }
+]
+requires-python = ">=3.13.15"
+dependencies = [
+    "matplotlib>=3.11.1",
+    "numpy>=2.5.2",
+    "pandas>=3.0.5",
+    "scikit-learn>=1.9.0",
+    "seaborn>=0.13.2",
+]
+
+[project.scripts]
+ames-price = "ames_price:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+extend-exclude = ["migrations", "notebooks", "data", ".ipynb_checkpoints"]
+indent-width = 4
+line-length = 80
+required-version = ">=0.16,<0.17"
+show-fixes = true
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+dummy-variable-rgx = "^_.*$" # underscore-prefixed names are intentionally unused
+ignore = [
+  "E741", # ambiguous names — comes back once you select all of "E"
+]
+select = [
+  "E",
+  "F",
+  "I",
+  "UP",
+  "B",
+  "SIM",
+  "RUF",
+  "S",
+  "PTH",
+  "C901",
+  "PLR0913",
+]
+unfixable = ["F401", "F841"] # flag unused imports/vars, don't silently delete them
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["ames_price"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10 # branches per function before ruff says "split this"
+
+[tool.ruff.lint.pylint]
+max-args = 7 # parameters per function; self/cls don't count
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"] # re-exports aren't unused
+"tests/**/*.py" = ["S101"] # asserts are fine in tests
+
+[tool.ruff.format]
+docstring-code-format = true # formats code inside your docstrings too
+docstring-code-line-length = "dynamic"
+indent-style = "space"
+line-ending = "lf" # stops CRLF noise in diffs on Windows
+quote-style = "double"
+skip-magic-trailing-comma = false # keep false: your trailing comma forces the split
+
+[tool.mypy]
+python_version = "3.13"       # mypy does NOT read requires-python — set it here
+files = ["src"]               # not tests: experiment tests are often throwaway
+strict = false
+check_untyped_defs = true     # still look inside unannotated functions
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true       # catches real bugs
+pretty = true
+
+# Scientific stacks ship partial or absent stubs. Scope this per-module and
+# extend the list as you add libraries — never set ignore_missing_imports
+# globally, or a genuine typo in an import goes unnoticed.
+[[tool.mypy.overrides]]
+module = [
+  "sklearn.*",
+  "scipy.*",
+  "matplotlib.*",
+  "datasets.*",
+  "transformers.*",
+  "seaborn.*",
+  "statsmodels.*",
+  "networkx.*",
+  "xgboost.*",
+  "lightgbm.*",
+  "cv2.*",
+  "nltk.*",
+  "tensorflow.*",
+  "keras.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]          # don't scan .venv, don't scan src
+addopts = [
+    "-ra",                     # summary of everything that wasn't a plain pass
+    "--strict-markers",        # a typo'd marker is an error, not a silent skip
+    "--strict-config",         # a typo'd config key here is an error too
+    "--import-mode=importlib", # modern import mode; no __init__.py in tests/
+]
+xfail_strict = true            # an xfail that passes is a failure, not a shrug
+markers = [
+    "slow: takes more than a second",
+    "integration: touches the network or a real DB",
+    "gpu: needs CUDA",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true          # was every if/else arm taken, not just every line
+
+[tool.coverage.report]
+exclude_also = [       # `also`, not `exclude_lines` — that one replaces the defaults
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+
+[dependency-groups]
+dev = [
+    "jupyter>=1.1.1",
+    "mypy>=2.3.1,<3",
+    "pre-commit>=4.6.2,<5",
+    "pytest>=9.1.1,<10",
+    "pytest-cov>=7.1.0,<8",
+    "ruff>=0.16.5,<0.17",
+]
