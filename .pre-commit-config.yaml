@@ -10,6 +10,9 @@ repos:
       - id: check-yaml
       - id: check-merge-conflict
       - id: check-added-large-files
+        # notebooks are committed with full outputs (see bd88d6d) — embedded
+        # plot PNGs routinely push them past the 500KB default
+        exclude: \.ipynb$
 
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.12.8
