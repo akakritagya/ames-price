@@ -1,13 +1,6 @@
 fail_fast: true    # stop at the first failing hook
 
 repos:
-  # runs first: strips notebook outputs before check-added-large-files
-  # (and everything else) sees the staged content
-  - repo: https://github.com/kynan/nbstripout
-    rev: 0.9.1
-    hooks:
-      - id: nbstripout       # strips notebook outputs so plots/tables don't bloat the repo
-
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
