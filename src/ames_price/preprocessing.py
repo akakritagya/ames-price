@@ -172,7 +172,7 @@ class Encoder(BaseEstimator, TransformerMixin):
         for col in ORDINAL_COLS:
             if col in X.columns:
                 X[col] = X[col].map(
-                    {level: i for i, level in enumerate(ORDER[col])}  # type: ignore[var-annotated,arg-type]
+                    {level: i for i, level in enumerate(ORDER[col])}
                 )
 
         for col in _LOG1P_COLS:

@@ -4,6 +4,8 @@ Single source of truth for the feature-type split used by both the EDA
 notebooks and the preprocessing/feature-engineering pipeline.
 """
 
+from typing import Any
+
 IDENTIFIER = ["Id"]
 TARGET = ["SalePrice"]
 
@@ -101,7 +103,7 @@ NOMINAL_COLS = sorted(
     ]
 )
 
-ORDER = {
+ORDER: dict[str, list[Any]] = {
     "OverallQual": list(range(1, 11)),
     "OverallCond": list(range(1, 11)),
     "LotShape": ["IR3", "IR2", "IR1", "Reg"],

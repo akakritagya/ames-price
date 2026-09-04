@@ -72,11 +72,23 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
     """
 
     def fit(self, X: pd.DataFrame, y: object = None) -> FeatureEngineer:
-        self.ordinal_merge_maps_ = {
-            col: _build_merge_map(X[col], ORDER[col], _MIN_LEVEL_COUNT)  # type: ignore[arg-type]
-            for col in _ORDINAL_BUCKET_COLS
-            if col in X.columns
-        }
+        self.ordinal_merge_maps_ = {}
+        for col in _ORDINAL_BUCKET_COLS:
+            if col not in X.columns:
+                continue
+            order = ORDER[col]
+            # "None" means the feature doesn't exist at all -- it must
+            # never be merged with a real (if thinly-populated) quality
+            # rating, so it's excluded from bucketing and mapped to
+            # itself rather than left to the cascading merge below.
+            has_none_level = order[0] == "None"
+            mergeable_order = order[1:] if has_none_level else order
+            merge_map = _build_merge_map(
+                X[col], mergeable_order, _MIN_LEVEL_COUNT
+            )
+            if has_none_level:
+                merge_map["None"] = "None"
+            self.ordinal_merge_maps_[col] = merge_map
         self.nominal_majority_ = {
             col: X[col].mode().iloc[0]
             for col in _NOMINAL_OTHER_BUCKET_COLS
