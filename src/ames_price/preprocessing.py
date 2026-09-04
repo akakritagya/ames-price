@@ -3,8 +3,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.preprocessing import OneHotEncoder
 
-from ames_price.constants import ORDER, ORDINAL_COLS
+from ames_price.constants import NOMINAL_COLS, ORDER, ORDINAL_COLS
 
 _SIMPLE_STRUCTURAL_COLS = [
     "PoolQC",
@@ -158,6 +159,11 @@ class Encoder(BaseEstimator, TransformerMixin):
     """
 
     def fit(self, X: pd.DataFrame, y: object = None) -> Encoder:
+        self.nominal_cols_ = [c for c in NOMINAL_COLS if c in X.columns]
+        self.onehot_ = OneHotEncoder(
+            handle_unknown="ignore", sparse_output=False
+        )
+        self.onehot_.fit(X[self.nominal_cols_])
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
@@ -173,4 +179,11 @@ class Encoder(BaseEstimator, TransformerMixin):
             if col in X.columns:
                 X[col] = np.log1p(X[col])
 
-        return X
+        onehot = self.onehot_.transform(X[self.nominal_cols_])
+        onehot_df = pd.DataFrame(
+            onehot,
+            columns=self.onehot_.get_feature_names_out(self.nominal_cols_),
+            index=X.index,
+        )
+        X = X.drop(columns=self.nominal_cols_)
+        return pd.concat([X, onehot_df], axis=1)

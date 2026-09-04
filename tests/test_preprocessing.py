@@ -130,3 +130,27 @@ def test_log1p_applied_to_flagged_numeric_columns():
     X = pd.DataFrame({"GrLivArea": [0.0, 999.0]})
     result = Encoder().fit_transform(X)
     assert result["GrLivArea"].tolist() == [np.log1p(0.0), np.log1p(999.0)]
+
+
+def test_nominal_columns_are_one_hot_encoded():
+    from ames_price.preprocessing import Encoder
+
+    X_train = pd.DataFrame({"Street": ["Pave", "Pave", "Grvl"]})
+    encoder = Encoder().fit(X_train)
+    result = encoder.transform(X_train)
+    assert "Street" not in result.columns
+    assert "Street_Pave" in result.columns
+    assert "Street_Grvl" in result.columns
+    assert result.loc[0, "Street_Pave"] == 1.0
+    assert result.loc[2, "Street_Grvl"] == 1.0
+
+
+def test_unseen_category_at_transform_time_becomes_all_zero_row():
+    from ames_price.preprocessing import Encoder
+
+    X_train = pd.DataFrame({"MSSubClass": [20, 60, 20]})
+    X_test = pd.DataFrame({"MSSubClass": [20, 150]})
+    encoder = Encoder().fit(X_train)
+    result = encoder.transform(X_test)
+    assert result.loc[1, "MSSubClass_20"] == 0.0
+    assert result.loc[1, "MSSubClass_60"] == 0.0
