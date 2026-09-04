@@ -27,6 +27,16 @@ _BSMT_NUMERIC = [
     "BsmtFullBath",
     "BsmtHalfBath",
 ]
+_REAL_GAP_MODE_COLS = [
+    "MSZoning",
+    "Utilities",
+    "Functional",
+    "SaleType",
+    "KitchenQual",
+    "Exterior1st",
+    "Exterior2nd",
+    "Electrical",
+]
 
 
 class Imputer(BaseEstimator, TransformerMixin):
@@ -55,6 +65,14 @@ class Imputer(BaseEstimator, TransformerMixin):
 
         has_veneer = X["MasVnrArea"].fillna(0) > 0
         self.masvnr_type_mode_ = X.loc[has_veneer, "MasVnrType"].mode().iloc[0]
+
+        self.lotfrontage_by_neighborhood_ = X.groupby("Neighborhood")[
+            "LotFrontage"
+        ].median()
+        self.lotfrontage_global_median_ = X["LotFrontage"].median()
+        self.mode_fills_ = {
+            col: X[col].mode().iloc[0] for col in _REAL_GAP_MODE_COLS
+        }
 
         return self
 
@@ -97,4 +115,19 @@ class Imputer(BaseEstimator, TransformerMixin):
         ].fillna(self.masvnr_type_mode_)
         X["MasVnrArea"] = X["MasVnrArea"].fillna(0)
 
+        neighborhood_fill = X["Neighborhood"].map(
+            self.lotfrontage_by_neighborhood_
+        )
+        X["LotFrontage"] = (
+            X["LotFrontage"]
+            .fillna(neighborhood_fill)
+            .fillna(self.lotfrontage_global_median_)
+        )
+
+        for col, fill in self.mode_fills_.items():
+            X[col] = X[col].fillna(fill)
+
+        assert not X.isna().any().any(), (  # noqa: S101
+            f"Imputer left NaNs in: {X.columns[X.isna().any()].tolist()}"
+        )
         return X

@@ -98,3 +98,19 @@ def test_no_veneer_gets_none_type():
 def test_veneer_area_recorded_type_missing_gets_conditional_fill():
     result = Imputer().fit_transform(_imputer_fixture())
     assert result.loc[2, "MasVnrType"] == "BrkFace"
+
+
+def test_lotfrontage_filled_with_neighborhood_median():
+    result = Imputer().fit_transform(_imputer_fixture())
+    assert result.loc[1, "LotFrontage"] == 70.0
+    assert result.loc[3, "LotFrontage"] == 100.0
+
+
+def test_mszoning_filled_with_mode():
+    result = Imputer().fit_transform(_imputer_fixture())
+    assert result.loc[3, "MSZoning"] == "RL"
+
+
+def test_transform_leaves_no_nan():
+    result = Imputer().fit_transform(_imputer_fixture())
+    assert not result.isna().any().any()
