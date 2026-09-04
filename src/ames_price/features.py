@@ -102,18 +102,19 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
         X = X.drop(columns=["1stFlrSF", "BsmtUnfSF"], errors="ignore")
 
         if "GarageType" in X.columns:
-            X["HasGarage"] = X["GarageType"] != "None"
+            has_garage = X["GarageType"] != "None"
             X["GarageAge"] = np.where(
-                X["HasGarage"], X["GarageYrBlt"] - X["YearBuilt"], 0
+                has_garage, X["GarageYrBlt"] - X["YearBuilt"], 0
             )
+            X["HasGarage"] = has_garage.astype(int)
 
         for col in _HAS_KEEP_MAGNITUDE_COLS:
             if col in X.columns:
-                X[f"Has{col}"] = X[col] > 0
+                X[f"Has{col}"] = (X[col] > 0).astype(int)
 
         for col in _HAS_DROP_MAGNITUDE_COLS:
             if col in X.columns:
-                X[f"Has{col}"] = X[col] > 0
+                X[f"Has{col}"] = (X[col] > 0).astype(int)
                 X = X.drop(columns=[col])
 
         for col, merge_map in self.ordinal_merge_maps_.items():

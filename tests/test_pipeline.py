@@ -19,8 +19,8 @@ def test_pipeline_produces_a_fully_numeric_matrix_with_no_nan():
     assert not test_out.isna().any().any()
     assert train_out.shape[0] == len(df_train)
     assert test_out.shape[0] == len(df_test)
+    assert train_out.shape[1] == 237
     assert list(train_out.columns) == list(test_out.columns)
-    assert all(
-        np.issubdtype(dtype, np.number) or np.issubdtype(dtype, np.bool_)
-        for dtype in train_out.dtypes
-    )
+    assert all(np.issubdtype(dtype, np.number) for dtype in train_out.dtypes)
+    assert train_out["GarageAge"].between(-30, 150).all()
+    assert test_out["GarageAge"].between(-30, 150).all()
