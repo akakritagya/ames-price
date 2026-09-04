@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
+
+from ames_price.constants import ORDER, ORDINAL_COLS
 
 _SIMPLE_STRUCTURAL_COLS = [
     "PoolQC",
@@ -130,4 +133,44 @@ class Imputer(BaseEstimator, TransformerMixin):
         assert not X.isna().any().any(), (  # noqa: S101
             f"Imputer left NaNs in: {X.columns[X.isna().any()].tolist()}"
         )
+        return X
+
+
+_LOG1P_COLS = [
+    "GrLivArea",
+    "LotArea",
+    "LotFrontage",
+    "TotalBsmtSF",
+    "BsmtFinSF1",
+    "GarageArea",
+    "OpenPorchSF",
+    "MasVnrArea",
+    "WoodDeckSF",
+    "2ndFlrSF",
+    "EnclosedPorch",
+]
+
+
+class Encoder(BaseEstimator, TransformerMixin):
+    """Ordinal integer-encoding on the documented order, log1p on skewed
+    numerics, one-hot on nominal categories. Fully mechanical -- every
+    rule here is a direct EDA finding, nothing decided in this class.
+    """
+
+    def fit(self, X: pd.DataFrame, y: object = None) -> Encoder:
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        X = X.copy()
+
+        for col in ORDINAL_COLS:
+            if col in X.columns:
+                X[col] = X[col].map(
+                    {level: i for i, level in enumerate(ORDER[col])}  # type: ignore[var-annotated,arg-type]
+                )
+
+        for col in _LOG1P_COLS:
+            if col in X.columns:
+                X[col] = np.log1p(X[col])
+
         return X

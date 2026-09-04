@@ -114,3 +114,19 @@ def test_mszoning_filled_with_mode():
 def test_transform_leaves_no_nan():
     result = Imputer().fit_transform(_imputer_fixture())
     assert not result.isna().any().any()
+
+
+def test_ordinal_columns_encoded_on_documented_order():
+    from ames_price.preprocessing import Encoder
+
+    X = pd.DataFrame({"KitchenQual": ["Po", "TA", "Ex"]})
+    result = Encoder().fit_transform(X)
+    assert result["KitchenQual"].tolist() == [0, 2, 4]
+
+
+def test_log1p_applied_to_flagged_numeric_columns():
+    from ames_price.preprocessing import Encoder
+
+    X = pd.DataFrame({"GrLivArea": [0.0, 999.0]})
+    result = Encoder().fit_transform(X)
+    assert result["GrLivArea"].tolist() == [np.log1p(0.0), np.log1p(999.0)]
