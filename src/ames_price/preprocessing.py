@@ -100,6 +100,14 @@ class Imputer(BaseEstimator, TransformerMixin):
             )
         X["GarageType"] = X["GarageType"].fillna("None")
 
+        # data-entry typos put GarageYrBlt after YrSold (even after
+        # 2207 in one test.csv row) -- a garage can't postdate the sale,
+        # so clip real garages only; the no-garage 0 sentinel is
+        # untouched since it's outside has_garage.
+        X.loc[has_garage, "GarageYrBlt"] = np.minimum(
+            X.loc[has_garage, "GarageYrBlt"], X.loc[has_garage, "YrSold"]
+        )
+
         has_bsmt = X["TotalBsmtSF"].fillna(0) > 0
         no_bsmt = ~has_bsmt
         for col in _BSMT_CATEGORICAL:

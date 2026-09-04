@@ -35,6 +35,7 @@ def _imputer_fixture() -> pd.DataFrame:
             "GarageFinish": [np.nan, "RFn", np.nan, np.nan],
             "GarageCond": [np.nan, "TA", np.nan, np.nan],
             "GarageYrBlt": [np.nan, 2005.0, np.nan, np.nan],
+            "YrSold": [2008.0, 2008.0, 2008.0, 2008.0],
             "GarageCars": [np.nan, 2.0, np.nan, np.nan],
             "GarageArea": [np.nan, 500.0, np.nan, np.nan],
             "TotalBsmtSF": [np.nan, 800.0, 800.0, np.nan],
