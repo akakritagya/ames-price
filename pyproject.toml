@@ -87,6 +87,7 @@ pretty = true
 # globally, or a genuine typo in an import goes unnoticed.
 [[tool.mypy.overrides]]
 module = [
+  "pandas.*",
   "sklearn.*",
   "scipy.*",
   "matplotlib.*",
