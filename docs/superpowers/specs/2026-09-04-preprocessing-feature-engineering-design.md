@@ -96,8 +96,10 @@ than dropping an entire total-or-parts side, drop only the one column
 needed to break each identity, chosen by that notebook's own post-total-exclusion
 VIF ranking — both are directly justified by numbers already computed,
 not a new judgment call:
-- Drop `1stFlrSF` (residual VIF 9.96). Keeps `GrLivArea`, `2ndFlrSF`,
-  `LowQualFinSF`.
+- Drop `1stFlrSF` (residual VIF 9.96). Keeps `GrLivArea` and `2ndFlrSF`
+  (`LowQualFinSF` also survives this step algebraically, but its raw
+  column is separately dropped below by the has-X rule — it doesn't
+  end up in the final output either way).
 - Drop `BsmtUnfSF` (residual VIF 9.89). Keeps `TotalBsmtSF`, `BsmtFinSF1`,
   `BsmtFinSF2`.
 
@@ -239,3 +241,9 @@ Loads train/test, drops the two outlier rows from train, runs
 - Scaling/normalization for a linear model (this pipeline's output is
   log-transformed but not scaled) — deferred to whatever model consumes
   this matrix, since the right scaling depends on the model family.
+- The output matrix is rank-deficient by one column per one-hot-encoded
+  nominal column (`OneHotEncoder` emits a full dummy set, no `drop`,
+  matching this design's own encoding rule above) — harmless for tree
+  models and regularized linear models, but plain OLS will fail on it
+  as-is. Whoever picks a linear model next should pass `drop="first"`
+  at that point, or accept the collinearity and regularize.
