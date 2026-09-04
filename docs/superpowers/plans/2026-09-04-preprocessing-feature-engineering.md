@@ -79,31 +79,99 @@ notebooks and the preprocessing/feature-engineering pipeline.
 IDENTIFIER = ["Id"]
 TARGET = ["SalePrice"]
 
-NUMERIC_COLS = sorted([
-    "LotFrontage", "LotArea", "MasVnrArea", "BsmtFinSF1", "BsmtFinSF2",
-    "BsmtUnfSF", "TotalBsmtSF", "1stFlrSF", "2ndFlrSF", "LowQualFinSF",
-    "GrLivArea", "BsmtFullBath", "BsmtHalfBath", "FullBath", "HalfBath",
-    "BedroomAbvGr", "KitchenAbvGr", "TotRmsAbvGrd", "Fireplaces",
-    "GarageCars", "GarageArea", "WoodDeckSF", "OpenPorchSF",
-    "EnclosedPorch", "3SsnPorch", "ScreenPorch", "PoolArea", "MiscVal",
-    "YearBuilt", "YearRemodAdd", "GarageYrBlt", "MoSold", "YrSold",
-])
+NUMERIC_COLS = sorted(
+    [
+        "LotFrontage",
+        "LotArea",
+        "MasVnrArea",
+        "BsmtFinSF1",
+        "BsmtFinSF2",
+        "BsmtUnfSF",
+        "TotalBsmtSF",
+        "1stFlrSF",
+        "2ndFlrSF",
+        "LowQualFinSF",
+        "GrLivArea",
+        "BsmtFullBath",
+        "BsmtHalfBath",
+        "FullBath",
+        "HalfBath",
+        "BedroomAbvGr",
+        "KitchenAbvGr",
+        "TotRmsAbvGrd",
+        "Fireplaces",
+        "GarageCars",
+        "GarageArea",
+        "WoodDeckSF",
+        "OpenPorchSF",
+        "EnclosedPorch",
+        "3SsnPorch",
+        "ScreenPorch",
+        "PoolArea",
+        "MiscVal",
+        "YearBuilt",
+        "YearRemodAdd",
+        "GarageYrBlt",
+        "MoSold",
+        "YrSold",
+    ]
+)
 
-ORDINAL_COLS = sorted([
-    "OverallQual", "OverallCond", "LotShape", "LandSlope",
-    "ExterQual", "ExterCond", "BsmtQual", "BsmtCond", "BsmtExposure",
-    "BsmtFinType1", "BsmtFinType2", "HeatingQC", "KitchenQual",
-    "Functional", "FireplaceQu", "GarageFinish", "GarageQual",
-    "GarageCond", "PavedDrive", "PoolQC", "Utilities",
-])
+ORDINAL_COLS = sorted(
+    [
+        "OverallQual",
+        "OverallCond",
+        "LotShape",
+        "LandSlope",
+        "ExterQual",
+        "ExterCond",
+        "BsmtQual",
+        "BsmtCond",
+        "BsmtExposure",
+        "BsmtFinType1",
+        "BsmtFinType2",
+        "HeatingQC",
+        "KitchenQual",
+        "Functional",
+        "FireplaceQu",
+        "GarageFinish",
+        "GarageQual",
+        "GarageCond",
+        "PavedDrive",
+        "PoolQC",
+        "Utilities",
+    ]
+)
 
-NOMINAL_COLS = sorted([
-    "MSSubClass", "MSZoning", "Street", "Alley", "LandContour", "LotConfig",
-    "Neighborhood", "Condition1", "Condition2", "BldgType", "HouseStyle",
-    "RoofStyle", "RoofMatl", "Exterior1st", "Exterior2nd", "MasVnrType",
-    "Foundation", "Heating", "CentralAir", "Electrical", "GarageType",
-    "MiscFeature", "SaleType", "SaleCondition", "Fence",
-])
+NOMINAL_COLS = sorted(
+    [
+        "MSSubClass",
+        "MSZoning",
+        "Street",
+        "Alley",
+        "LandContour",
+        "LotConfig",
+        "Neighborhood",
+        "Condition1",
+        "Condition2",
+        "BldgType",
+        "HouseStyle",
+        "RoofStyle",
+        "RoofMatl",
+        "Exterior1st",
+        "Exterior2nd",
+        "MasVnrType",
+        "Foundation",
+        "Heating",
+        "CentralAir",
+        "Electrical",
+        "GarageType",
+        "MiscFeature",
+        "SaleType",
+        "SaleCondition",
+        "Fence",
+    ]
+)
 
 ORDER = {
     "OverallQual": list(range(1, 11)),
@@ -180,43 +248,45 @@ def _imputer_fixture() -> pd.DataFrame:
     #        present, but a sub-field is still NaN
     # row 3: second no-feature row, in Somerst, for per-neighborhood
     #        median testing
-    return pd.DataFrame({
-        "Neighborhood": ["CollgCr", "CollgCr", "Somerst", "Somerst"],
-        "LotFrontage": [70.0, np.nan, 100.0, np.nan],
-        "MSZoning": ["RL", "RL", "RL", np.nan],
-        "Utilities": ["AllPub", "AllPub", "AllPub", "AllPub"],
-        "Functional": ["Typ", "Typ", "Typ", "Typ"],
-        "SaleType": ["WD", "WD", "WD", "WD"],
-        "KitchenQual": ["TA", "TA", "TA", "TA"],
-        "Exterior1st": ["VinylSd", "VinylSd", "VinylSd", "VinylSd"],
-        "Exterior2nd": ["VinylSd", "VinylSd", "VinylSd", "VinylSd"],
-        "Electrical": ["SBrkr", "SBrkr", "SBrkr", "SBrkr"],
-        "PoolQC": [np.nan, "Gd", np.nan, np.nan],
-        "MiscFeature": [np.nan, "Shed", np.nan, np.nan],
-        "Alley": [np.nan, "Grvl", np.nan, np.nan],
-        "Fence": [np.nan, "MnPrv", np.nan, np.nan],
-        "FireplaceQu": [np.nan, "TA", np.nan, np.nan],
-        "GarageType": [np.nan, "Attchd", "Attchd", np.nan],
-        "GarageQual": [np.nan, "TA", np.nan, np.nan],
-        "GarageFinish": [np.nan, "RFn", np.nan, np.nan],
-        "GarageCond": [np.nan, "TA", np.nan, np.nan],
-        "GarageYrBlt": [np.nan, 2005.0, np.nan, np.nan],
-        "GarageCars": [np.nan, 2.0, np.nan, np.nan],
-        "GarageArea": [np.nan, 500.0, np.nan, np.nan],
-        "TotalBsmtSF": [np.nan, 800.0, 800.0, np.nan],
-        "BsmtQual": [np.nan, "TA", np.nan, np.nan],
-        "BsmtCond": [np.nan, "TA", np.nan, np.nan],
-        "BsmtExposure": [np.nan, "No", np.nan, np.nan],
-        "BsmtFinType1": [np.nan, "GLQ", np.nan, np.nan],
-        "BsmtFinType2": [np.nan, "Unf", np.nan, np.nan],
-        "BsmtFinSF1": [np.nan, 600.0, 600.0, np.nan],
-        "BsmtFinSF2": [np.nan, 0.0, 0.0, np.nan],
-        "BsmtUnfSF": [np.nan, 200.0, 200.0, np.nan],
-        "BsmtFullBath": [np.nan, 1.0, 1.0, np.nan],
-        "BsmtHalfBath": [np.nan, 0.0, 0.0, np.nan],
-        "MasVnrType": [np.nan, "BrkFace", np.nan, np.nan],
-        "MasVnrArea": [0.0, 150.0, 150.0, 0.0],
-    })
+    return pd.DataFrame(
+        {
+            "Neighborhood": ["CollgCr", "CollgCr", "Somerst", "Somerst"],
+            "LotFrontage": [70.0, np.nan, 100.0, np.nan],
+            "MSZoning": ["RL", "RL", "RL", np.nan],
+            "Utilities": ["AllPub", "AllPub", "AllPub", "AllPub"],
+            "Functional": ["Typ", "Typ", "Typ", "Typ"],
+            "SaleType": ["WD", "WD", "WD", "WD"],
+            "KitchenQual": ["TA", "TA", "TA", "TA"],
+            "Exterior1st": ["VinylSd", "VinylSd", "VinylSd", "VinylSd"],
+            "Exterior2nd": ["VinylSd", "VinylSd", "VinylSd", "VinylSd"],
+            "Electrical": ["SBrkr", "SBrkr", "SBrkr", "SBrkr"],
+            "PoolQC": [np.nan, "Gd", np.nan, np.nan],
+            "MiscFeature": [np.nan, "Shed", np.nan, np.nan],
+            "Alley": [np.nan, "Grvl", np.nan, np.nan],
+            "Fence": [np.nan, "MnPrv", np.nan, np.nan],
+            "FireplaceQu": [np.nan, "TA", np.nan, np.nan],
+            "GarageType": [np.nan, "Attchd", "Attchd", np.nan],
+            "GarageQual": [np.nan, "TA", np.nan, np.nan],
+            "GarageFinish": [np.nan, "RFn", np.nan, np.nan],
+            "GarageCond": [np.nan, "TA", np.nan, np.nan],
+            "GarageYrBlt": [np.nan, 2005.0, np.nan, np.nan],
+            "GarageCars": [np.nan, 2.0, np.nan, np.nan],
+            "GarageArea": [np.nan, 500.0, np.nan, np.nan],
+            "TotalBsmtSF": [np.nan, 800.0, 800.0, np.nan],
+            "BsmtQual": [np.nan, "TA", np.nan, np.nan],
+            "BsmtCond": [np.nan, "TA", np.nan, np.nan],
+            "BsmtExposure": [np.nan, "No", np.nan, np.nan],
+            "BsmtFinType1": [np.nan, "GLQ", np.nan, np.nan],
+            "BsmtFinType2": [np.nan, "Unf", np.nan, np.nan],
+            "BsmtFinSF1": [np.nan, 600.0, 600.0, np.nan],
+            "BsmtFinSF2": [np.nan, 0.0, 0.0, np.nan],
+            "BsmtUnfSF": [np.nan, 200.0, 200.0, np.nan],
+            "BsmtFullBath": [np.nan, 1.0, 1.0, np.nan],
+            "BsmtHalfBath": [np.nan, 0.0, 0.0, np.nan],
+            "MasVnrType": [np.nan, "BrkFace", np.nan, np.nan],
+            "MasVnrArea": [0.0, 150.0, 150.0, 0.0],
+        }
+    )
 
 
 def test_simple_structural_groups_fill_with_none():
@@ -279,11 +349,30 @@ from __future__ import annotations
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
-_SIMPLE_STRUCTURAL_COLS = ["PoolQC", "MiscFeature", "Alley", "Fence", "FireplaceQu"]
+_SIMPLE_STRUCTURAL_COLS = [
+    "PoolQC",
+    "MiscFeature",
+    "Alley",
+    "Fence",
+    "FireplaceQu",
+]
 _GARAGE_CATEGORICAL = ["GarageQual", "GarageFinish", "GarageCond"]
 _GARAGE_NUMERIC = ["GarageYrBlt", "GarageCars", "GarageArea"]
-_BSMT_CATEGORICAL = ["BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinType1", "BsmtFinType2"]
-_BSMT_NUMERIC = ["BsmtFinSF1", "BsmtFinSF2", "BsmtUnfSF", "TotalBsmtSF", "BsmtFullBath", "BsmtHalfBath"]
+_BSMT_CATEGORICAL = [
+    "BsmtQual",
+    "BsmtCond",
+    "BsmtExposure",
+    "BsmtFinType1",
+    "BsmtFinType2",
+]
+_BSMT_NUMERIC = [
+    "BsmtFinSF1",
+    "BsmtFinSF2",
+    "BsmtUnfSF",
+    "TotalBsmtSF",
+    "BsmtFullBath",
+    "BsmtHalfBath",
+]
 
 
 class Imputer(BaseEstimator, TransformerMixin):
@@ -301,7 +390,9 @@ class Imputer(BaseEstimator, TransformerMixin):
         self.garage_categorical_mode_ = (
             X.loc[has_garage, _GARAGE_CATEGORICAL].mode().iloc[0]
         )
-        self.garage_numeric_median_ = X.loc[has_garage, _GARAGE_NUMERIC].median()
+        self.garage_numeric_median_ = X.loc[
+            has_garage, _GARAGE_NUMERIC
+        ].median()
 
         has_bsmt = X["TotalBsmtSF"].fillna(0) > 0
         self.bsmt_categorical_mode_ = (
@@ -344,12 +435,12 @@ class Imputer(BaseEstimator, TransformerMixin):
             X[col] = X[col].fillna(0)
 
         has_veneer = X["MasVnrArea"].fillna(0) > 0
-        X.loc[~has_veneer, "MasVnrType"] = (
-            X.loc[~has_veneer, "MasVnrType"].fillna("None")
-        )
-        X.loc[has_veneer, "MasVnrType"] = (
-            X.loc[has_veneer, "MasVnrType"].fillna(self.masvnr_type_mode_)
-        )
+        X.loc[~has_veneer, "MasVnrType"] = X.loc[
+            ~has_veneer, "MasVnrType"
+        ].fillna("None")
+        X.loc[has_veneer, "MasVnrType"] = X.loc[
+            has_veneer, "MasVnrType"
+        ].fillna(self.masvnr_type_mode_)
         X["MasVnrArea"] = X["MasVnrArea"].fillna(0)
 
         return X
@@ -416,38 +507,44 @@ In `src/ames_price/preprocessing.py`, add below the existing group constants:
 
 ```python
 _REAL_GAP_MODE_COLS = [
-    "MSZoning", "Utilities", "Functional", "SaleType",
-    "KitchenQual", "Exterior1st", "Exterior2nd", "Electrical",
+    "MSZoning",
+    "Utilities",
+    "Functional",
+    "SaleType",
+    "KitchenQual",
+    "Exterior1st",
+    "Exterior2nd",
+    "Electrical",
 ]
 ```
 
 In `Imputer.fit`, add before `return self`:
 
 ```python
-        self.lotfrontage_by_neighborhood_ = (
-            X.groupby("Neighborhood")["LotFrontage"].median()
-        )
-        self.lotfrontage_global_median_ = X["LotFrontage"].median()
-        self.mode_fills_ = {
-            col: X[col].mode().iloc[0] for col in _REAL_GAP_MODE_COLS
-        }
+self.lotfrontage_by_neighborhood_ = X.groupby("Neighborhood")[
+    "LotFrontage"
+].median()
+self.lotfrontage_global_median_ = X["LotFrontage"].median()
+self.mode_fills_ = {col: X[col].mode().iloc[0] for col in _REAL_GAP_MODE_COLS}
 ```
 
 In `Imputer.transform`, replace the final `return X` with:
 
 ```python
-        neighborhood_fill = X["Neighborhood"].map(self.lotfrontage_by_neighborhood_)
-        X["LotFrontage"] = (
-            X["LotFrontage"].fillna(neighborhood_fill).fillna(self.lotfrontage_global_median_)
-        )
+neighborhood_fill = X["Neighborhood"].map(self.lotfrontage_by_neighborhood_)
+X["LotFrontage"] = (
+    X["LotFrontage"]
+    .fillna(neighborhood_fill)
+    .fillna(self.lotfrontage_global_median_)
+)
 
-        for col, fill in self.mode_fills_.items():
-            X[col] = X[col].fillna(fill)
+for col, fill in self.mode_fills_.items():
+    X[col] = X[col].fillna(fill)
 
-        assert not X.isna().any().any(), (
-            f"Imputer left NaNs in: {X.columns[X.isna().any()].tolist()}"
-        )
-        return X
+assert not X.isna().any().any(), (
+    f"Imputer left NaNs in: {X.columns[X.isna().any()].tolist()}"
+)
+return X
 ```
 
 - [ ] **Step 4: Run tests to verify they pass**
@@ -490,25 +587,27 @@ from ames_price.features import FeatureEngineer
 
 
 def _feature_fixture() -> pd.DataFrame:
-    return pd.DataFrame({
-        "1stFlrSF": [800.0, 1200.0],
-        "2ndFlrSF": [0.0, 600.0],
-        "LowQualFinSF": [0.0, 0.0],
-        "GrLivArea": [800.0, 1800.0],
-        "BsmtFinSF1": [400.0, 0.0],
-        "BsmtFinSF2": [0.0, 0.0],
-        "BsmtUnfSF": [400.0, 900.0],
-        "TotalBsmtSF": [800.0, 900.0],
-        "GarageType": ["None", "Attchd"],
-        "GarageYrBlt": [0.0, 2005.0],
-        "YearBuilt": [1990.0, 2003.0],
-        "OpenPorchSF": [0.0, 45.0],
-        "MasVnrArea": [0.0, 200.0],
-        "WoodDeckSF": [0.0, 100.0],
-        "EnclosedPorch": [0.0, 0.0],
-        "PoolArea": [0.0, 0.0],
-        "3SsnPorch": [0.0, 0.0],
-    })
+    return pd.DataFrame(
+        {
+            "1stFlrSF": [800.0, 1200.0],
+            "2ndFlrSF": [0.0, 600.0],
+            "LowQualFinSF": [0.0, 0.0],
+            "GrLivArea": [800.0, 1800.0],
+            "BsmtFinSF1": [400.0, 0.0],
+            "BsmtFinSF2": [0.0, 0.0],
+            "BsmtUnfSF": [400.0, 900.0],
+            "TotalBsmtSF": [800.0, 900.0],
+            "GarageType": ["None", "Attchd"],
+            "GarageYrBlt": [0.0, 2005.0],
+            "YearBuilt": [1990.0, 2003.0],
+            "OpenPorchSF": [0.0, 45.0],
+            "MasVnrArea": [0.0, 200.0],
+            "WoodDeckSF": [0.0, 100.0],
+            "EnclosedPorch": [0.0, 0.0],
+            "PoolArea": [0.0, 0.0],
+            "3SsnPorch": [0.0, 0.0],
+        }
+    )
 
 
 def test_structural_identity_columns_are_dropped():
@@ -556,7 +655,13 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
-_HAS_KEEP_MAGNITUDE_COLS = ["OpenPorchSF", "MasVnrArea", "WoodDeckSF", "2ndFlrSF", "EnclosedPorch"]
+_HAS_KEEP_MAGNITUDE_COLS = [
+    "OpenPorchSF",
+    "MasVnrArea",
+    "WoodDeckSF",
+    "2ndFlrSF",
+    "EnclosedPorch",
+]
 _HAS_DROP_MAGNITUDE_COLS = ["PoolArea", "LowQualFinSF", "3SsnPorch"]
 
 
@@ -623,12 +728,14 @@ Append to `tests/test_features.py`:
 
 ```python
 def _bucket_fixture() -> pd.DataFrame:
-    return pd.DataFrame({
-        "ExterCond": ["Po", *["TA"] * 12, "Ex"],
-        "RoofMatl": [*["CompShg"] * 12, "WdShngl", "WdShake"],
-        "Heating": [*["GasA"] * 12, "GasW", "Wall"],
-        "Utilities": ["AllPub"] * 14,
-    })
+    return pd.DataFrame(
+        {
+            "ExterCond": ["Po", *["TA"] * 12, "Ex"],
+            "RoofMatl": [*["CompShg"] * 12, "WdShngl", "WdShake"],
+            "Heating": [*["GasA"] * 12, "GasW", "Wall"],
+            "Utilities": ["AllPub"] * 14,
+        }
+    )
 
 
 def test_ordinal_thin_levels_merge_into_majority():
@@ -663,8 +770,14 @@ In `src/ames_price/features.py`, add the import and new constants above the clas
 from ames_price.constants import ORDER
 
 _ORDINAL_BUCKET_COLS = [
-    "ExterCond", "Functional", "HeatingQC", "BsmtCond",
-    "GarageCond", "OverallQual", "PoolQC", "GarageQual",
+    "ExterCond",
+    "Functional",
+    "HeatingQC",
+    "BsmtCond",
+    "GarageCond",
+    "OverallQual",
+    "PoolQC",
+    "GarageQual",
 ]
 _NOMINAL_OTHER_BUCKET_COLS = ["RoofMatl", "Heating"]
 _MIN_LEVEL_COUNT = 10
@@ -791,8 +904,16 @@ Append to `src/ames_price/preprocessing.py` (add `import numpy as np` and `from 
 
 ```python
 _LOG1P_COLS = [
-    "GrLivArea", "LotArea", "LotFrontage", "TotalBsmtSF", "BsmtFinSF1",
-    "GarageArea", "OpenPorchSF", "MasVnrArea", "WoodDeckSF", "2ndFlrSF",
+    "GrLivArea",
+    "LotArea",
+    "LotFrontage",
+    "TotalBsmtSF",
+    "BsmtFinSF1",
+    "GarageArea",
+    "OpenPorchSF",
+    "MasVnrArea",
+    "WoodDeckSF",
+    "2ndFlrSF",
     "EnclosedPorch",
 ]
 
@@ -989,11 +1110,13 @@ from ames_price.preprocessing import Encoder, Imputer
 
 
 def build_pipeline() -> Pipeline:
-    return Pipeline([
-        ("impute", Imputer()),
-        ("engineer", FeatureEngineer()),
-        ("encode", Encoder()),
-    ])
+    return Pipeline(
+        [
+            ("impute", Imputer()),
+            ("engineer", FeatureEngineer()),
+            ("encode", Encoder()),
+        ]
+    )
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -1036,11 +1159,24 @@ git commit -m "feat: compose Imputer, FeatureEngineer, Encoder into build_pipeli
 # scratchpad script (not committed) -- builds notebooks/preprocessing_check.ipynb
 import json
 
+
 def md(src):
-    return {"cell_type": "markdown", "metadata": {}, "source": src.splitlines(keepends=True)}
+    return {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": src.splitlines(keepends=True),
+    }
+
 
 def code(src):
-    return {"cell_type": "code", "execution_count": None, "metadata": {}, "outputs": [], "source": src.splitlines(keepends=True)}
+    return {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": src.splitlines(keepends=True),
+    }
+
 
 cells = [
     md(
@@ -1059,11 +1195,11 @@ cells = [
         "FEATURE_COLS = NUMERIC_COLS + ORDINAL_COLS + NOMINAL_COLS"
     ),
     code(
-        "df_train = pd.read_csv(\"../data/train.csv\")\n"
-        "df_test = pd.read_csv(\"../data/test.csv\")\n\n"
+        'df_train = pd.read_csv("../data/train.csv")\n'
+        'df_test = pd.read_csv("../data/test.csv")\n\n'
         "# per the design doc: drop the two flagged outliers before fitting\n"
         "# anything, so no imputation/bucketing statistic is influenced by them\n"
-        "df_train = df_train[~df_train[\"Id\"].isin([524, 1299])]\n"
+        'df_train = df_train[~df_train["Id"].isin([524, 1299])]\n'
         "df_train.shape, df_test.shape"
     ),
     code(
@@ -1074,47 +1210,59 @@ cells = [
         "assert not test_out.isna().any().any()\n"
         "train_out.shape, test_out.shape"
     ),
-    md("## Column-set sanity check\n\nConfirm the identity columns are gone and the new derived/flag columns are present."),
-    code(
-        "for col in [\"1stFlrSF\", \"BsmtUnfSF\", \"Utilities\"]:\n"
-        "    assert col not in train_out.columns, col\n"
-        "for col in [\"HasGarage\", \"GarageAge\", \"HasOpenPorchSF\", \"HasPoolArea\"]:\n"
-        "    assert col in train_out.columns, col\n"
-        "print(\"ok\")"
+    md(
+        "## Column-set sanity check\n\nConfirm the identity columns are gone and the new derived/flag columns are present."
     ),
-    md("## Log-transform check\n\nBefore/after histograms for a couple of the flagged skewed columns -- confirming the skew reduction shows up here, not just in `1_target_variable.ipynb`."),
+    code(
+        'for col in ["1stFlrSF", "BsmtUnfSF", "Utilities"]:\n'
+        "    assert col not in train_out.columns, col\n"
+        'for col in ["HasGarage", "GarageAge", "HasOpenPorchSF", "HasPoolArea"]:\n'
+        "    assert col in train_out.columns, col\n"
+        'print("ok")'
+    ),
+    md(
+        "## Log-transform check\n\nBefore/after histograms for a couple of the flagged skewed columns -- confirming the skew reduction shows up here, not just in `1_target_variable.ipynb`."
+    ),
     code(
         "fig, axes = plt.subplots(2, 2, figsize=(10, 7))\n"
-        "sns_cols = [\"GrLivArea\", \"LotArea\"]\n"
+        'sns_cols = ["GrLivArea", "LotArea"]\n'
         "for i, col in enumerate(sns_cols):\n"
         "    axes[0, i].hist(df_train[col].dropna(), bins=40)\n"
-        "    axes[0, i].set_title(f\"{col} (raw)\")\n"
+        '    axes[0, i].set_title(f"{col} (raw)")\n'
         "    axes[1, i].hist(train_out[col], bins=40)\n"
-        "    axes[1, i].set_title(f\"{col} (log1p)\")\n"
+        '    axes[1, i].set_title(f"{col} (log1p)")\n'
         "plt.tight_layout()\n"
         "plt.show()"
     ),
-    md("## Bucketing check\n\nValue counts for a bucketed ordinal column and a bucketed nominal column, confirming the merge landed where expected."),
-    code(
-        "print(\"ExterCond (post-Encoder, integer-coded):\")\n"
-        "print(train_out[\"ExterCond\"].value_counts().sort_index())"
+    md(
+        "## Bucketing check\n\nValue counts for a bucketed ordinal column and a bucketed nominal column, confirming the merge landed where expected."
     ),
     code(
-        "roofmatl_cols = [c for c in train_out.columns if c.startswith(\"RoofMatl_\")]\n"
+        'print("ExterCond (post-Encoder, integer-coded):")\n'
+        'print(train_out["ExterCond"].value_counts().sort_index())'
+    ),
+    code(
+        'roofmatl_cols = [c for c in train_out.columns if c.startswith("RoofMatl_")]\n'
         "print(train_out[roofmatl_cols].sum())"
     ),
-    md("## Derived-feature spot check\n\n`GarageAge` should be exactly 0 wherever `HasGarage` is `False`."),
+    md(
+        "## Derived-feature spot check\n\n`GarageAge` should be exactly 0 wherever `HasGarage` is `False`."
+    ),
     code(
-        "no_garage = ~train_out[\"HasGarage\"]\n"
-        "assert (train_out.loc[no_garage, \"GarageAge\"] == 0).all()\n"
-        "print(f\"{no_garage.sum()} no-garage rows, all GarageAge == 0\")"
+        'no_garage = ~train_out["HasGarage"]\n'
+        'assert (train_out.loc[no_garage, "GarageAge"] == 0).all()\n'
+        'print(f"{no_garage.sum()} no-garage rows, all GarageAge == 0")'
     ),
 ]
 
 nb = {
     "cells": cells,
     "metadata": {
-        "kernelspec": {"display_name": "Python 3 (ipykernel)", "language": "python", "name": "python3"},
+        "kernelspec": {
+            "display_name": "Python 3 (ipykernel)",
+            "language": "python",
+            "name": "python3",
+        },
         "language_info": {"name": "python", "version": "3.13.15"},
     },
     "nbformat": 4,
@@ -1138,8 +1286,15 @@ Expected: `[NbConvertApp] Writing ... bytes to preprocessing_check.ipynb`, no er
 Run:
 ```python
 import json
+
 nb = json.load(open("notebooks/preprocessing_check.ipynb"))
-errs = [o for c in nb["cells"] if c.get("cell_type") == "code" for o in c.get("outputs", []) if o.get("output_type") == "error"]
+errs = [
+    o
+    for c in nb["cells"]
+    if c.get("cell_type") == "code"
+    for o in c.get("outputs", [])
+    if o.get("output_type") == "error"
+]
 print("errors:", len(errs))
 ```
 Expected: `errors: 0`

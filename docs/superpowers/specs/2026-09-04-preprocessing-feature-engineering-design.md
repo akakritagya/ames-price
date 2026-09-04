@@ -169,11 +169,13 @@ here is a direct, uncontested EDA finding:
 ```python
 # src/ames_price/pipeline.py
 def build_pipeline() -> Pipeline:
-    return Pipeline([
-        ("impute", Imputer()),
-        ("engineer", FeatureEngineer()),
-        ("encode", Encoder()),
-    ])
+    return Pipeline(
+        [
+            ("impute", Imputer()),
+            ("engineer", FeatureEngineer()),
+            ("encode", Encoder()),
+        ]
+    )
 ```
 
 `pipeline.fit_transform(df_train)` / `pipeline.transform(df_test)`. Each
