@@ -115,6 +115,9 @@ class Imputer(BaseEstimator, TransformerMixin):
             X.loc[has_bsmt, col] = X.loc[has_bsmt, col].fillna(
                 self.bsmt_categorical_mode_[col]
             )
+        # unconditional, unlike _GARAGE_NUMERIC's has-feature/no-feature
+        # split -- verified against real data that no row with a real
+        # basement (TotalBsmtSF > 0) is ever missing one of these.
         for col in _BSMT_NUMERIC:
             X[col] = X[col].fillna(0)
 
@@ -194,4 +197,9 @@ class Encoder(BaseEstimator, TransformerMixin):
             index=X.index,
         )
         X = X.drop(columns=self.nominal_cols_)
-        return pd.concat([X, onehot_df], axis=1)
+        X = pd.concat([X, onehot_df], axis=1)
+
+        assert not X.isna().any().any(), (  # noqa: S101
+            f"Encoder left NaNs in: {X.columns[X.isna().any()].tolist()}"
+        )
+        return X

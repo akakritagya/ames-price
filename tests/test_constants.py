@@ -23,3 +23,20 @@ def test_order_covers_exactly_the_ordinal_columns():
 def test_identifier_and_target_are_singletons():
     assert IDENTIFIER == ["Id"]
     assert TARGET == ["SalePrice"]
+
+
+def test_structural_absence_ordinal_cols_have_none_as_lowest_level():
+    structural_absence_cols = [
+        "BsmtQual",
+        "BsmtCond",
+        "BsmtExposure",
+        "BsmtFinType1",
+        "BsmtFinType2",
+        "FireplaceQu",
+        "GarageFinish",
+        "GarageQual",
+        "GarageCond",
+        "PoolQC",
+    ]
+    for col in structural_absence_cols:
+        assert ORDER[col][0] == "None"
