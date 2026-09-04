@@ -55,3 +55,33 @@ def test_has_x_flags_drop_magnitude():
     assert "PoolArea" not in result.columns
     assert "HasPoolArea" in result.columns
     assert result.loc[0, "HasPoolArea"] == False  # noqa: E712
+
+
+def _bucket_fixture() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "ExterCond": ["Po", *["TA"] * 12, "Ex"],
+            "RoofMatl": [*["CompShg"] * 12, "WdShngl", "WdShake"],
+            "Heating": [*["GasA"] * 12, "GasW", "Wall"],
+            "Utilities": ["AllPub"] * 14,
+        }
+    )
+
+
+def test_ordinal_thin_levels_merge_into_majority():
+    result = FeatureEngineer().fit_transform(_bucket_fixture())
+    assert result.loc[0, "ExterCond"] == "TA"
+    assert result.loc[13, "ExterCond"] == "TA"
+    assert (result["ExterCond"] == "TA").all()
+
+
+def test_nominal_minority_buckets_into_other():
+    result = FeatureEngineer().fit_transform(_bucket_fixture())
+    assert result.loc[12, "RoofMatl"] == "Other"
+    assert result.loc[13, "RoofMatl"] == "Other"
+    assert (result.loc[:11, "RoofMatl"] == "CompShg").all()
+
+
+def test_utilities_is_dropped():
+    result = FeatureEngineer().fit_transform(_bucket_fixture())
+    assert "Utilities" not in result.columns
