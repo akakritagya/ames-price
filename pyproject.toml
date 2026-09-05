@@ -47,8 +47,12 @@ select = [
   "PTH",
   "C901",
   "PLR0913",
+  "D",
 ]
 unfixable = ["F401", "F841"] # flag unused imports/vars, don't silently delete them
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
@@ -61,8 +65,8 @@ max-complexity = 10 # branches per function before ruff says "split this"
 max-args = 7 # parameters per function; self/cls don't count
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"] # re-exports aren't unused
-"tests/**/*.py" = ["S101"] # asserts are fine in tests
+"__init__.py" = ["F401", "D"] # re-exports aren't unused; often empty
+"tests/**/*.py" = ["S101", "D"] # asserts are fine; tests don't need docstrings
 
 [tool.ruff.format]
 docstring-code-format = true # formats code inside your docstrings too

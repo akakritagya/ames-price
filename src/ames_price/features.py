@@ -1,3 +1,5 @@
+"""Feature engineering: the judgment calls EDA flagged but left open."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -30,11 +32,14 @@ _MIN_LEVEL_COUNT = 10
 
 
 def _build_merge_map(series: pd.Series, order: list, min_count: int) -> dict:
-    """Cascading merge: repeatedly find the globally thinnest level and
-    merge it into whichever adjacent documented-order level is more
-    populous, until every remaining group clears min_count (or only one
-    group is left). Keeps the survivor's own label, never invents a new
-    one -- Encoder's ORDER dict stays valid unchanged."""
+    """Cascading merge to satisfy a minimum per-level count.
+
+    Repeatedly finds the globally thinnest level and merges it into
+    whichever adjacent documented-order level is more populous, until
+    every remaining group clears min_count (or only one group is left).
+    Keeps the survivor's own label, never invents a new one -- Encoder's
+    ORDER dict stays valid unchanged.
+    """
     counts = [int((series == level).sum()) for level in order]
     members = [[level] for level in order]
     reps = list(order)
@@ -67,11 +72,14 @@ def _build_merge_map(series: pd.Series, order: list, min_count: int) -> dict:
 
 
 class FeatureEngineer(BaseEstimator, TransformerMixin):
-    """Structural-identity resolution, derived features, has-X flags, and
-    rare-level bucketing -- the judgment calls EDA flagged but left open.
+    """The judgment calls EDA flagged but left open.
+
+    Structural-identity resolution, derived features, has-X flags, and
+    rare-level bucketing.
     """
 
     def fit(self, X: pd.DataFrame, y: object = None) -> FeatureEngineer:
+        """Fit rare-level merge maps and nominal majority labels."""
         self.ordinal_merge_maps_ = {}
         for col in _ORDINAL_BUCKET_COLS:
             if col not in X.columns:
@@ -97,6 +105,7 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Apply structural drops, derived features, has-X flags, bucketing."""
         X = X.copy()
 
         X = X.drop(columns=["1stFlrSF", "BsmtUnfSF"], errors="ignore")

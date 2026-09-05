@@ -1,3 +1,5 @@
+"""Imputer and Encoder -- the mechanical preprocessing steps dictated by EDA."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -54,6 +56,7 @@ class Imputer(BaseEstimator, TransformerMixin):
     """
 
     def fit(self, X: pd.DataFrame, y: object = None) -> Imputer:
+        """Fit imputation statistics (modes/medians) from training data only."""
         has_garage = X["GarageType"].notna()
         self.garage_categorical_mode_ = (
             X.loc[has_garage, _GARAGE_CATEGORICAL].mode().iloc[0]
@@ -81,6 +84,7 @@ class Imputer(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Fill every NaN using the statistics fit in fit()."""
         X = X.copy()
 
         for col in _SIMPLE_STRUCTURAL_COLS:
@@ -164,12 +168,15 @@ _LOG1P_COLS = [
 
 
 class Encoder(BaseEstimator, TransformerMixin):
-    """Ordinal integer-encoding on the documented order, log1p on skewed
-    numerics, one-hot on nominal categories. Fully mechanical -- every
-    rule here is a direct EDA finding, nothing decided in this class.
+    """Ordinal/log1p/one-hot encoding -- the mechanical, EDA-dictated rules.
+
+    Integer-encodes ordinals on the documented order, log1p-transforms
+    skewed numerics, one-hot encodes nominal categories. Every rule here
+    is a direct EDA finding, nothing decided in this class.
     """
 
     def fit(self, X: pd.DataFrame, y: object = None) -> Encoder:
+        """Fit the one-hot encoder on the observed nominal categories."""
         self.nominal_cols_ = [c for c in NOMINAL_COLS if c in X.columns]
         self.onehot_ = OneHotEncoder(
             handle_unknown="ignore", sparse_output=False
@@ -178,6 +185,7 @@ class Encoder(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Ordinal-encode, log1p-transform, and one-hot encode X."""
         X = X.copy()
 
         for col in ORDINAL_COLS:
