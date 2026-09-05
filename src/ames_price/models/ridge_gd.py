@@ -1,0 +1,110 @@
+"""Ridge-regularized linear regression fit by mini-batch gradient descent."""
+
+from __future__ import annotations
+
+import numpy as np
+
+
+class RidgeGD:
+    """Linear regression with an L2 penalty, fit by mini-batch gradient descent.
+
+    Same skeleton as ``LinearRegressionGD``: weights start at zero, the
+    intercept is tracked as its own scalar, and the batch loop is
+    identical. The only difference is an ``alpha * sum(coef_ ** 2)``
+    penalty added to the objective and its gradient -- excluded from the
+    intercept's update, since only the relationship to features should
+    shrink, not the model's baseline prediction.
+    """
+
+    def __init__(
+        self,
+        learning_rate: float = 0.01,
+        batch_size: int = 32,
+        n_epochs: int = 100,
+        alpha: float = 1.0,
+        random_state: int | None = None,
+    ) -> None:
+        """Store hyperparameters; fitting happens in fit(), not here.
+
+        Parameters
+        ----------
+        learning_rate : float, default=0.01
+            Step size applied to each gradient update.
+        batch_size : int, default=32
+            Number of rows per mini-batch. A value >= n_samples degrades
+            to full-batch gradient descent.
+        n_epochs : int, default=100
+            Number of passes over the shuffled training data.
+        alpha : float, default=1.0
+            L2 penalty strength applied to coef_. The intercept is never
+            penalized.
+        random_state : int or None, default=None
+            Seed for the per-epoch row shuffle. None gives a different,
+            non-reproducible shuffle on every fit() call.
+        """
+        self.learning_rate = learning_rate
+        self.batch_size = batch_size
+        self.n_epochs = n_epochs
+        self.alpha = alpha
+        self.random_state = random_state
+
+    def fit(self, X: np.ndarray, y: np.ndarray) -> RidgeGD:
+        """Fit by mini-batch gradient descent on the L2-penalized objective.
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_samples, n_features)
+            Training data.
+        y : ndarray of shape (n_samples,)
+            Target values.
+
+        Returns
+        -------
+        RidgeGD
+            The fitted estimator, with coef_, intercept_, and
+            loss_history_ set.
+        """
+        n_samples, n_features = X.shape
+        rng = np.random.default_rng(self.random_state)
+
+        self.coef_ = np.zeros(n_features)
+        self.intercept_ = 0.0
+        self.loss_history_: list[float] = []
+
+        for _ in range(self.n_epochs):
+            shuffled_idx = rng.permutation(n_samples)
+            for start in range(0, n_samples, self.batch_size):
+                batch_idx = shuffled_idx[start : start + self.batch_size]
+                X_batch = X[batch_idx]
+                y_batch = y[batch_idx]
+
+                error = X_batch @ self.coef_ + self.intercept_ - y_batch
+                grad_coef = (2 / len(batch_idx)) * (
+                    X_batch.T @ error
+                ) + 2 * self.alpha * self.coef_
+                grad_intercept = (2 / len(batch_idx)) * error.sum()
+
+                self.coef_ -= self.learning_rate * grad_coef
+                self.intercept_ -= self.learning_rate * grad_intercept
+
+            epoch_pred = X @ self.coef_ + self.intercept_
+            epoch_mse = float(np.mean((epoch_pred - y) ** 2))
+            epoch_penalty = self.alpha * float(np.sum(self.coef_**2))
+            self.loss_history_.append(epoch_mse + epoch_penalty)
+
+        return self
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """Predict target values for X.
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_samples, n_features)
+            Samples to predict on.
+
+        Returns
+        -------
+        ndarray of shape (n_samples,)
+            Predicted values, X @ coef_ + intercept_.
+        """
+        return X @ self.coef_ + self.intercept_
