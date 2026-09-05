@@ -21,13 +21,16 @@ step exists, not just producing a leaderboard score.
   - `pipeline.py` — `build_pipeline()`, composing the imputer, feature
     engineer, encoder, and a `StandardScaler` into one
     `sklearn.pipeline.Pipeline`
-  - `models/` — `LinearRegressionGD`, a from-scratch mini-batch gradient
-    descent linear regression
+  - `models/` — from-scratch mini-batch gradient descent models:
+    `LinearRegressionGD`, plus the regularized `RidgeGD`/`LassoGD`
 - `notebooks/preprocessing_check.ipynb` — runs the pipeline end to end on
   the real data and visually verifies the output
 - `notebooks/models/1_linear_regression.ipynb` — fits `LinearRegressionGD`
   and scikit-learn's `LinearRegression` on the same preprocessed data and
   compares them
+- `notebooks/models/2_regularized_regression.ipynb` — fits `RidgeGD`/
+  `LassoGD` and scikit-learn's `Ridge`/`Lasso` on the same preprocessed
+  data, alongside the notebook 1 baseline, and compares them
 - `tests/` — unit tests per transformer rule, plus one integration test
   against the real train/test CSVs
 - `docs/superpowers/specs/` and `docs/superpowers/plans/` — the design
