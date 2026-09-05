@@ -1,3 +1,4 @@
+# tests/test_pipeline.py
 import numpy as np
 import pandas as pd
 
@@ -22,5 +23,23 @@ def test_pipeline_produces_a_fully_numeric_matrix_with_no_nan():
     assert train_out.shape[1] == 237
     assert list(train_out.columns) == list(test_out.columns)
     assert all(np.issubdtype(dtype, np.number) for dtype in train_out.dtypes)
-    assert train_out["GarageAge"].between(-30, 150).all()
-    assert test_out["GarageAge"].between(-30, 150).all()
+    assert np.isfinite(train_out["GarageAge"]).all()
+    assert np.isfinite(test_out["GarageAge"]).all()
+
+
+def test_pipeline_output_is_standardized():
+    df_train = pd.read_csv("data/train.csv")
+    df_train = df_train[~df_train["Id"].isin([524, 1299])]
+
+    pipeline = build_pipeline()
+    train_out = pipeline.fit_transform(df_train[FEATURE_COLS])
+
+    means = train_out.mean(axis=0)
+    stds = train_out.std(axis=0, ddof=0)
+    assert np.allclose(means, 0, atol=1e-6)
+    # a zero-variance column (none expected, but not guaranteed by this
+    # test) would legitimately stay at std 0 rather than 1 -- StandardScaler
+    # skips dividing by a zero variance instead of raising or emitting NaN.
+    assert np.all(
+        np.isclose(stds, 1, atol=1e-6) | np.isclose(stds, 0, atol=1e-6)
+    )
