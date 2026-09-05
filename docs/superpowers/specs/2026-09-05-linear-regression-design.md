@@ -33,7 +33,7 @@ squeezing out leaderboard score.
 
 ## Module layout
 
-```
+```text
 src/ames_price/
     pipeline.py                     # +1 step: ("scale", StandardScaler())
     models/
@@ -115,6 +115,15 @@ rows, computing the batch's MSE gradient with respect to `coef_` and
 epoch, evaluate the loss over the *full* training set (not just the last
 batch) and append it to `loss_history_` — this is what the notebook plots
 as the convergence curve.
+
+**Vectorization:** the gradient itself is plain matrix algebra over the
+whole batch at once (`error = X_batch @ coef_ + intercept_ - y_batch`;
+`grad_coef = (2 / len(batch)) * X_batch.T @ error`; `grad_intercept =
+(2 / len(batch)) * error.sum()`) — no per-row Python loop anywhere. The
+only explicit `for` loops are over epochs and over batches within an
+epoch, because mini-batch GD is inherently sequential at that level: each
+batch's gradient depends on the weights the *previous* batch just
+updated, so those two loops can't be vectorized away.
 
 **Stopping:** fixed `n_epochs`, no tolerance-based early stopping. For a
 first simple model, picking `n_epochs` by eye from where the loss curve
