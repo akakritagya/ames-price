@@ -165,6 +165,7 @@ Ames data in unit tests; `2_regularized_regression.ipynb` is where
 real-data behavior is demonstrated and visually checked.
 
 **`tests/test_ridge_gd.py`:**
+
 - On the same known-linear synthetic dataset as `LinearRegressionGD`
   (`y = 3*x1 - 2*x2 + 5 + small_noise`), `fit` converges to
   *approximately* the true weights and intercept — a **looser** tolerance
@@ -176,6 +177,7 @@ real-data behavior is demonstrated and visually checked.
   overall (the regularized objective, not bare MSE).
 
 **`tests/test_lasso_gd.py`:**
+
 - A synthetic dataset with a known linear relationship where *some*
   features have a true coefficient of exactly zero (e.g.
   `y = 3*x1 - 2*x2 + 0*x3 + 0*x4 + 5 + small_noise`) and others don't.
