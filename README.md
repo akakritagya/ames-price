@@ -11,21 +11,27 @@ step exists, not just producing a leaderboard score.
   (load & orient → target variable → missingness → univariate → bivariate →
   multicollinearity → outliers → wrap-up). Each is observational only: no
   fills, transforms, or drops happen here, only findings.
-- `src/ames_price/` — the preprocessing/feature-engineering pipeline that
-  turns those findings into code:
+- `src/ames_price/` — the preprocessing/feature-engineering pipeline and
+  the models built on top of it:
   - `constants.py` — shared column groupings and documented ordinal orders
   - `preprocessing.py` — `Imputer` (fills every `NaN`) and `Encoder`
     (ordinal/log1p/one-hot encoding)
   - `features.py` — `FeatureEngineer` (structural-identity resolution,
     derived features, rare-level bucketing)
-  - `pipeline.py` — `build_pipeline()`, composing all three into one
+  - `pipeline.py` — `build_pipeline()`, composing the imputer, feature
+    engineer, encoder, and a `StandardScaler` into one
     `sklearn.pipeline.Pipeline`
+  - `models/` — `LinearRegressionGD`, a from-scratch mini-batch gradient
+    descent linear regression
 - `notebooks/preprocessing_check.ipynb` — runs the pipeline end to end on
   the real data and visually verifies the output
+- `notebooks/models/1_linear_regression.ipynb` — fits `LinearRegressionGD`
+  and scikit-learn's `LinearRegression` on the same preprocessed data and
+  compares them
 - `tests/` — unit tests per transformer rule, plus one integration test
   against the real train/test CSVs
-- `docs/superpowers/specs/` and `docs/superpowers/plans/` — the design doc
-  and implementation plan behind the preprocessing pipeline
+- `docs/superpowers/specs/` and `docs/superpowers/plans/` — the design
+  docs and implementation plans behind the pipeline and models
 
 Data (`train.csv`/`test.csv`) isn't versioned — download it from the Kaggle
 competition page and place it under `data/`.

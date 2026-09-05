@@ -1,4 +1,4 @@
-"""Composes Imputer, FeatureEngineer, and Encoder into one sklearn Pipeline."""
+"""Composes Imputer, FeatureEngineer, Encoder, and a scaler into a Pipeline."""
 
 from __future__ import annotations
 
