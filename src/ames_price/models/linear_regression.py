@@ -21,6 +21,7 @@ class LinearRegressionGD:
         batch_size: int = 32,
         n_epochs: int = 100,
         random_state: int | None = None,
+        verbose: bool = False,
     ) -> None:
         """Store hyperparameters; fitting happens in fit(), not here.
 
@@ -36,11 +37,15 @@ class LinearRegressionGD:
         random_state : int or None, default=None
             Seed for the per-epoch row shuffle. None gives a different,
             non-reproducible shuffle on every fit() call.
+        verbose : bool, default=False
+            If True, print the epoch number and loss every 10 epochs
+            (plus the final epoch).
         """
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.n_epochs = n_epochs
         self.random_state = random_state
+        self.verbose = verbose
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> LinearRegressionGD:
         """Fit by mini-batch gradient descent.
@@ -65,7 +70,7 @@ class LinearRegressionGD:
         self.intercept_ = 0.0
         self.loss_history_: list[float] = []
 
-        for _ in range(self.n_epochs):
+        for epoch in range(self.n_epochs):
             shuffled_idx = rng.permutation(n_samples)
             for start in range(0, n_samples, self.batch_size):
                 batch_idx = shuffled_idx[start : start + self.batch_size]
@@ -82,6 +87,9 @@ class LinearRegressionGD:
             epoch_pred = X @ self.coef_ + self.intercept_
             epoch_loss = float(np.mean((epoch_pred - y) ** 2))
             self.loss_history_.append(epoch_loss)
+
+            if self.verbose and (epoch % 10 == 0 or epoch == self.n_epochs - 1):
+                print(f"epoch {epoch + 1}/{self.n_epochs} - loss: {epoch_loss:.4f}")
 
         return self
 

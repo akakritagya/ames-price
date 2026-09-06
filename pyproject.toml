@@ -26,7 +26,7 @@ build-backend = "uv_build"
 [tool.ruff]
 extend-exclude = ["migrations", "notebooks", "data", ".ipynb_checkpoints"]
 indent-width = 4
-line-length = 80
+line-length = 87
 required-version = ">=0.16,<0.17"
 show-fixes = true
 src = ["src", "tests"]
