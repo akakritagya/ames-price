@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "akakritagya", email = "neupaneramesh555@gmail.com" }
 ]
-requires-python = ">=3.13.15"
+requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.11.1",
     "numpy>=2.5.2",
