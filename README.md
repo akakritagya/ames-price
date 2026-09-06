@@ -14,6 +14,7 @@ ames-price/
 │   ├── preprocessing.py   # Imputer (fills every NaN) and Encoder (ordinal/log1p/one-hot)
 │   ├── features.py        # FeatureEngineer (derived features, rare-level bucketing)
 │   ├── pipeline.py        # build_pipeline() -- composes imputer, features, encoder, scaler
+│   ├── model_selection.py # kfold_split() -- from-scratch k-fold index splitting
 │   └── models/            # from-scratch mini-batch gradient descent models
 │       ├── linear_regression.py  # LinearRegressionGD
 │       ├── ridge_gd.py           # RidgeGD (L2)
@@ -25,7 +26,8 @@ ames-price/
 │   └── models/
 │       ├── 1_linear_regression.ipynb       # LinearRegressionGD vs sklearn LinearRegression
 │       ├── 2_regularized_regression.ipynb  # RidgeGD/LassoGD vs sklearn Ridge/Lasso
-│       └── 3_elastic_net.ipynb             # ElasticNetGD vs sklearn ElasticNet
+│       ├── 3_elastic_net.ipynb             # ElasticNetGD vs sklearn ElasticNet
+│       └── 4_cross_validation.ipynb        # 5-fold CV hyperparameter selection vs. notebooks 2/3's single split
 ├── tests/              # unit tests per transformer rule, plus a real-CSV integration test
 ├── docs/superpowers/
 │   ├── specs/          # design docs behind the pipeline and models
@@ -40,6 +42,13 @@ happen there, only findings.
 
 Data (`train.csv`/`test.csv`) isn't versioned — download it from the Kaggle
 competition page and place it under `data/`.
+
+## Results
+
+Best model: sklearn `Lasso` (alpha=0.003162) — RMSE 0.113 (log space), R² 0.924
+on a held-out split; `LassoGD`/`ElasticNetGD` track it closely. 5-fold CV
+(notebook 4) confirmed 4 of 6 regularized models' single-split alpha picks
+exactly — only Ridge shifted toward more regularization.
 
 ## Using the pipeline
 
@@ -63,6 +72,8 @@ test_matrix = pipeline.transform(df_test[feature_cols])
 ## Development setup
 
 ```shell
+git clone https://github.com/akakritagya/ames-price.git
+cd ames-price
 uv sync
 uv run pre-commit install --install-hooks \
   --hook-type pre-commit --hook-type pre-push --hook-type commit-msg
