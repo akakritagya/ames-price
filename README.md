@@ -7,38 +7,36 @@ step exists, not just producing a leaderboard score.
 
 ## Project layout
 
-- `notebooks/eda/0-7` — exploratory data analysis, one notebook per step
-  (load & orient → target variable → missingness → univariate → bivariate →
-  multicollinearity → outliers → wrap-up). Each is observational only: no
-  fills, transforms, or drops happen here, only findings.
-- `src/ames_price/` — the preprocessing/feature-engineering pipeline and
-  the models built on top of it:
-  - `constants.py` — shared column groupings and documented ordinal orders
-  - `preprocessing.py` — `Imputer` (fills every `NaN`) and `Encoder`
-    (ordinal/log1p/one-hot encoding)
-  - `features.py` — `FeatureEngineer` (structural-identity resolution,
-    derived features, rare-level bucketing)
-  - `pipeline.py` — `build_pipeline()`, composing the imputer, feature
-    engineer, encoder, and a `StandardScaler` into one
-    `sklearn.pipeline.Pipeline`
-  - `models/` — from-scratch mini-batch gradient descent models:
-    `LinearRegressionGD`, plus the regularized `RidgeGD`/`LassoGD`/
-    `ElasticNetGD`
-- `notebooks/preprocessing_check.ipynb` — runs the pipeline end to end on
-  the real data and visually verifies the output
-- `notebooks/models/1_linear_regression.ipynb` — fits `LinearRegressionGD`
-  and scikit-learn's `LinearRegression` on the same preprocessed data and
-  compares them
-- `notebooks/models/2_regularized_regression.ipynb` — fits `RidgeGD`/
-  `LassoGD` and scikit-learn's `Ridge`/`Lasso` on the same preprocessed
-  data, alongside the notebook 1 baseline, and compares them
-- `notebooks/models/3_elastic_net.ipynb` — fits `ElasticNetGD` and
-  scikit-learn's `ElasticNet` and compares them, alongside the
-  notebook 1/2 baselines
-- `tests/` — unit tests per transformer rule, plus one integration test
-  against the real train/test CSVs
-- `docs/superpowers/specs/` and `docs/superpowers/plans/` — the design
-  docs and implementation plans behind the pipeline and models
+```text
+ames-price/
+├── src/ames_price/
+│   ├── constants.py       # shared column groupings, documented ordinal orders
+│   ├── preprocessing.py   # Imputer (fills every NaN) and Encoder (ordinal/log1p/one-hot)
+│   ├── features.py        # FeatureEngineer (derived features, rare-level bucketing)
+│   ├── pipeline.py        # build_pipeline() -- composes imputer, features, encoder, scaler
+│   └── models/            # from-scratch mini-batch gradient descent models
+│       ├── linear_regression.py  # LinearRegressionGD
+│       ├── ridge_gd.py           # RidgeGD (L2)
+│       ├── lasso_gd.py           # LassoGD (L1)
+│       └── elastic_net_gd.py     # ElasticNetGD (L1+L2)
+├── notebooks/
+│   ├── eda/                       # 0-7, load & orient -> ... -> wrap-up (observational only)
+│   ├── preprocessing_check.ipynb  # runs the pipeline end to end, visually verifies output
+│   └── models/
+│       ├── 1_linear_regression.ipynb       # LinearRegressionGD vs sklearn LinearRegression
+│       ├── 2_regularized_regression.ipynb  # RidgeGD/LassoGD vs sklearn Ridge/Lasso
+│       └── 3_elastic_net.ipynb             # ElasticNetGD vs sklearn ElasticNet
+├── tests/              # unit tests per transformer rule, plus a real-CSV integration test
+├── docs/superpowers/
+│   ├── specs/          # design docs behind the pipeline and models
+│   └── plans/          # implementation plans behind the pipeline and models
+└── data/               # train.csv / test.csv (not versioned -- see below)
+```
+
+`notebooks/eda/` steps run in order: load & orient → target variable →
+missingness → univariate → bivariate → multicollinearity → outliers →
+wrap-up. Each is observational only — no fills, transforms, or drops
+happen there, only findings.
 
 Data (`train.csv`/`test.csv`) isn't versioned — download it from the Kaggle
 competition page and place it under `data/`.
