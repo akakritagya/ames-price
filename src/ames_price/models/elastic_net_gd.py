@@ -22,9 +22,10 @@ class ElasticNetGD:
     is bitwise identical to ``LassoGD``'s at the same ``alpha``. At
     ``l1_ratio=0.0`` it is ``alpha * coef_``, which is **not**
     numerically equal to ``RidgeGD``'s ``2 * alpha * coef_`` at the same
-    ``alpha`` (a 4x difference in effective L2 strength) -- this is
-    expected, not a bug: alpha is not comparable 1:1 across model
-    families, consistent with ``RidgeGD``/``LassoGD``'s own docstrings.
+    ``alpha`` (a 2x difference in effective L2 strength) -- this is
+    expected, not a bug, consistent with this project's general stance
+    (see ``2_regularized_regression.ipynb``) that alpha is not
+    comparable 1:1 across model families.
 
     Like ``LassoGD``, the L1 component uses the subgradient approximation
     (``np.sign(0) == 0``) rather than a proximal/soft-thresholding

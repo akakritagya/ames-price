@@ -108,7 +108,7 @@ by batch size — it applies at full strength on every batch regardless of
 the penalty gradient reduces to `alpha * np.sign(coef_)` — bitwise
 identical to `LassoGD` at the same `alpha`. At `l1_ratio=0`, it reduces
 to `alpha * coef_`, which is **not** numerically equal to `RidgeGD`'s
-`2 * alpha * coef_` at the same `alpha` (a 4x difference in effective L2
+`2 * alpha * coef_` at the same `alpha` (a 2x difference in effective L2
 strength for the same nominal `alpha`, because `RidgeGD`'s objective
 omits the `0.5` factor sklearn's `ElasticNet`/`Ridge` convention
 includes). This is documented explicitly in the class docstring as

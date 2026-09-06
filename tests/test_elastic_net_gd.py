@@ -1,6 +1,7 @@
 import numpy as np
 
 from ames_price.models.elastic_net_gd import ElasticNetGD
+from ames_price.models.lasso_gd import LassoGD
 
 
 def _sparse_linear_fixture(
@@ -38,26 +39,44 @@ def test_l1_ratio_one_matches_lasso_behavior():
     assert np.allclose(model.coef_[:2], true_coef[:2], atol=0.5)
     assert abs(model.intercept_ - true_intercept) < 0.1
 
-
-def test_l1_ratio_half_shows_mixed_shrinkage():
-    X, y, true_coef, true_intercept = _sparse_linear_fixture()
-    model = ElasticNetGD(
+    # at l1_ratio=1.0 the penalty gradient is bitwise identical to
+    # LassoGD's at the same alpha -- provably exact, so assert exact
+    # equality rather than just qualitative similarity.
+    lasso_model = LassoGD(
         learning_rate=0.1,
         batch_size=20,
         n_epochs=300,
         alpha=0.5,
-        l1_ratio=0.5,
         random_state=42,
     )
-    model.fit(X, y)
+    lasso_model.fit(X, y)
+    np.testing.assert_array_equal(model.coef_, lasso_model.coef_)
+    assert model.intercept_ == lasso_model.intercept_
 
-    # the added L2 term biases every coefficient toward zero, not just
-    # the true-zero ones -- looser tolerance than the pure-L1 case.
-    assert np.allclose(model.coef_[:2], true_coef[:2], atol=0.8)
-    # x3/x4 still shrink toward zero, though less tightly than l1_ratio=1.
-    assert abs(model.coef_[2]) < 0.3
-    assert abs(model.coef_[3]) < 0.3
-    assert abs(model.intercept_ - true_intercept) < 0.1
+
+def test_l1_ratio_half_shows_mixed_shrinkage():
+    X, y, _true_coef, true_intercept = _sparse_linear_fixture()
+    common_kwargs = dict(
+        learning_rate=0.1,
+        batch_size=20,
+        n_epochs=300,
+        alpha=0.5,
+        random_state=42,
+    )
+    model_l1_only = ElasticNetGD(l1_ratio=1.0, **common_kwargs)
+    model_l1_only.fit(X, y)
+    model_mixed = ElasticNetGD(l1_ratio=0.5, **common_kwargs)
+    model_mixed.fit(X, y)
+
+    # adding L2 weight (lower l1_ratio) shrinks the informative
+    # coefficients further toward zero than pure L1 alone -- the
+    # actual mixing behavior, not just "it still fits reasonably".
+    assert abs(model_mixed.coef_[0]) < abs(model_l1_only.coef_[0])
+    assert abs(model_mixed.coef_[1]) < abs(model_l1_only.coef_[1])
+    # x3/x4 still shrink toward zero under the mixed penalty too.
+    assert abs(model_mixed.coef_[2]) < 0.3
+    assert abs(model_mixed.coef_[3]) < 0.3
+    assert abs(model_mixed.intercept_ - true_intercept) < 0.1
 
 
 def test_predict_output_shape_matches_input_rows():

@@ -22,7 +22,8 @@ step exists, not just producing a leaderboard score.
     engineer, encoder, and a `StandardScaler` into one
     `sklearn.pipeline.Pipeline`
   - `models/` — from-scratch mini-batch gradient descent models:
-    `LinearRegressionGD`, plus the regularized `RidgeGD`/`LassoGD`
+    `LinearRegressionGD`, plus the regularized `RidgeGD`/`LassoGD`/
+    `ElasticNetGD`
 - `notebooks/preprocessing_check.ipynb` — runs the pipeline end to end on
   the real data and visually verifies the output
 - `notebooks/models/1_linear_regression.ipynb` — fits `LinearRegressionGD`
@@ -31,6 +32,9 @@ step exists, not just producing a leaderboard score.
 - `notebooks/models/2_regularized_regression.ipynb` — fits `RidgeGD`/
   `LassoGD` and scikit-learn's `Ridge`/`Lasso` on the same preprocessed
   data, alongside the notebook 1 baseline, and compares them
+- `notebooks/models/3_elastic_net.ipynb` — fits `ElasticNetGD` and
+  scikit-learn's `ElasticNet` and compares them, alongside the
+  notebook 1/2 baselines
 - `tests/` — unit tests per transformer rule, plus one integration test
   against the real train/test CSVs
 - `docs/superpowers/specs/` and `docs/superpowers/plans/` — the design
