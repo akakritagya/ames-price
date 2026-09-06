@@ -1,7 +1,7 @@
 [project]
 name = "ames-price"
 version = "0.1.0"
-description = "Add your description here"
+description = "Predicting Ames house sale prices — a learning project emphasizing why each step exists, not just leaderboard score"
 readme = "README.md"
 authors = [
     { name = "akakritagya", email = "neupaneramesh555@gmail.com" }
