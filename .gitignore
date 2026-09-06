@@ -15,5 +15,8 @@ data/
 # Jupyter
 .ipynb_checkpoints/
 
+# Kaggle notebook output, written next to the notebook when run
+notebooks/kaggle/submission.csv
+
 # Editor
 .vscode/

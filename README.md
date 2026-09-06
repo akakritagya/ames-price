@@ -23,11 +23,14 @@ ames-price/
 ├── notebooks/
 │   ├── eda/                       # 0-7, load & orient -> ... -> wrap-up (observational only)
 │   ├── preprocessing_check.ipynb  # runs the pipeline end to end, visually verifies output
-│   └── models/
-│       ├── 1_linear_regression.ipynb       # LinearRegressionGD vs sklearn LinearRegression
-│       ├── 2_regularized_regression.ipynb  # RidgeGD/LassoGD vs sklearn Ridge/Lasso
-│       ├── 3_elastic_net.ipynb             # ElasticNetGD vs sklearn ElasticNet
-│       └── 4_cross_validation.ipynb        # 5-fold CV hyperparameter selection vs. notebooks 2/3's single split
+│   ├── models/
+│   │   ├── 1_linear_regression.ipynb       # LinearRegressionGD vs sklearn LinearRegression
+│   │   ├── 2_regularized_regression.ipynb  # RidgeGD/LassoGD vs sklearn Ridge/Lasso
+│   │   ├── 3_elastic_net.ipynb             # ElasticNetGD vs sklearn ElasticNet
+│   │   ├── 4_cross_validation.ipynb        # 5-fold CV hyperparameter selection vs. notebooks 2/3's single split
+│   │   └── 5_submission.ipynb              # refits the best model on full train data, writes data/submission.csv
+│   └── kaggle/
+│       └── full_pipeline_regression.ipynb  # self-contained EDA->preprocessing->modeling->submission walkthrough, for Kaggle
 ├── tests/              # unit tests per transformer rule, plus a real-CSV integration test
 ├── docs/superpowers/
 │   ├── specs/          # design docs behind the pipeline and models
@@ -49,6 +52,21 @@ Best model: sklearn `Lasso` (alpha=0.003162) — RMSE 0.113 (log space), R² 0.9
 on a held-out split; `LassoGD`/`ElasticNetGD` track it closely. 5-fold CV
 (notebook 4) confirmed 4 of 6 regularized models' single-split alpha picks
 exactly — only Ridge shifted toward more regularization.
+
+Notebook 5 refits this Lasso on the full training set and writes
+`data/submission.csv` in the Kaggle-required `Id,SalePrice` format. The
+competition's evaluation metric is RMSLE, which training against
+`log1p(SalePrice)` already directly optimizes. Uploading the file to the
+leaderboard is a manual step tied to a Kaggle account — see the notebook's
+last cell for both the web UI and CLI options.
+
+`notebooks/kaggle/full_pipeline_regression.ipynb` compresses the whole
+project — EDA, preprocessing/feature engineering, all four model
+families, CV-based hyperparameter selection, and submission — into one
+documented, runnable notebook (~35s end to end). It installs the
+`ames_price` package straight from this repo's GitHub so it can also run
+unmodified as a Kaggle Code notebook, and locates the competition CSVs
+under either `/kaggle/input/...` or this repo's `data/`, whichever exists.
 
 ## Using the pipeline
 
